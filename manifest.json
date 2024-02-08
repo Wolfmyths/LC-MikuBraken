@@ -1,6 +1,6 @@
 {
     "name": "MikuBraken",
-    "version_number": "1.0.0",
+    "version_number": "1.0.1",
     "website_url": "https://github.com/Wolfmyths/LC-MikuBraken",
     "description": "Replaces the Braken model and sounds with Hatsune Miku",
     "dependencies": [

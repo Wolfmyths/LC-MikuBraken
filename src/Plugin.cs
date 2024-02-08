@@ -14,7 +14,7 @@ namespace MikuBraken
     {
         private const string modGUID = "Wolfmyths.MikuBraken";
         private const string modName = "Miku Braken";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -37,10 +37,7 @@ namespace MikuBraken
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
 
-            mls.LogInfo("Miku Braken has awakened");
-
-            harmony.PatchAll(typeof(FlowerManAIPatch));
-            harmony.PatchAll(typeof(TerminalPatch));
+            mls.LogInfo("Mikudayooo");
 
             mls = Logger;
 
@@ -71,6 +68,10 @@ namespace MikuBraken
                     mls.LogError("Failed to load Prefab bundle");
                 }
             }
+
+            harmony.PatchAll(typeof(MikuBrakenBase));
+            harmony.PatchAll(typeof(FlowerManAIPatch));
+            harmony.PatchAll(typeof(TerminalPatch));
         }
 
         void Start()
@@ -83,7 +84,7 @@ namespace MikuBraken
             SoundTool.ReplaceAudioClip("Step4", SoundFX[7], "Flowerman(Clone)");
 
             // Replace Miku getting caught
-            SoundTool.ReplaceAudioClip("Found1", SoundFX[1]); // Miku_Caught
+            SoundTool.ReplaceAudioClip("Found1", SoundFX[1], "Flowerman(Clone)"); // Miku_Caught
 
         }
     }

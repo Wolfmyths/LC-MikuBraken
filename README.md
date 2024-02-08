@@ -15,7 +15,7 @@ Replaces the Braken model and sounds with Hatsune Miku!
 
 ### Manual
 1. Download the [latest release](https://github.com/Wolfmyths/LC-MikuBraken/releases)
-2. Merge the contents of `/plugins` with `pathToBepInEx/BepInEx/Plugins/`
+2. Merge the contents of `plugins/` with `pathToBepInEx/BepInEx/Plugins/`
 
 ## Roadmap
 This project has a github page which is open source, feel free to contribute!
@@ -32,7 +32,7 @@ This project has a github page which is open source, feel free to contribute!
 ### Project Setup
 - If changing the assets:
   - Download the lethal company unity template https://github.com/LethalCompany/LethalCompanyTemplate 
-  - Clone this repository and merge the contents of `/unity` with your unity project
+  - Clone this repository and merge the contents of `unity/` with your unity project
   - If changing the model, download the .fbx version of [Hatsune Miku](https://sketchfab.com/3d-models/tda-miku-with-bones-b8c3d6ca7d0840b8a00e500e1008d88b) model made by [zHairezt](https://sketchfab.com/zHairezt)
     - Only install the .fbx file, textures and configured meshes are already in this repository
 
