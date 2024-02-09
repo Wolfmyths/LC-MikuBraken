@@ -21,7 +21,7 @@ Replaces the Braken model and sounds with Hatsune Miku!
 This project has a github page which is open source, feel free to contribute!
 
 - Animations (Braken animations would be enough. But custom would be great too!)
-- Config for toggling replaced sounds
+- ~~Config for toggling replaced sounds~~
 - More sounds
 - Blue glowing eyes like the Braken
 - Ragdoll physics for her hair
