@@ -12,49 +12,55 @@ namespace MikuBraken.Patches
         [HarmonyPostfix]
         static void OverrideStart(FlowermanAI __instance)
         {
-            if (__instance != null)
+            if (ConfigManager.MikuModel.Value)
             {
-                if (ConfigManager.MikuModel.Value)
+
+                // Clone miku prefab
+                GameObject MikuClone = Object.Instantiate(MikuBrakenBase.Miku, __instance.gameObject.transform);
+                MikuClone.name = "Miku(Clone)";
+                MikuClone.transform.localPosition = Vector3.zero; // Possible fix for weird collision on stairwells?
+                MikuClone.SetActive(true);
+
+                if (ConfigManager.MikuGlowingEyes.Value)
                 {
-                    // Clone miku prefab
-                    GameObject MikuClone = Object.Instantiate(MikuBrakenBase.Miku, __instance.gameObject.transform);
-                    MikuClone.name = "Miku(Clone)";
-                    MikuClone.transform.localPosition = Vector3.zero; // Possible fix for weird collision on stairwells?
+                    // Clone glowing eyes prefab
+                    GameObject MikuEyes = Object.Instantiate(MikuBrakenBase.Miku_Eyes, MikuClone.gameObject.transform);
+                    MikuEyes.name = "MikuEyes(Clone)";
 
-                    // Make Miku Visble
-                    MikuClone.SetActive(true);
-
-                    // Hide braken model
-                    Renderer[] renderers = __instance.transform.Find("FlowermanModel").GetComponentsInChildren<Renderer>();
-                    for (int i = 0; i < renderers.Length; i++)
-                    {
-                        renderers[i].enabled = false;
-                    }
+                    MikuEyes.SetActive(true);
+                    MikuEyes.transform.localPosition = new Vector3(-0.0817f, 2.5481f, 0.1302f);
                 }
 
-                if (ConfigManager.MikuScanTag.Value)
+                // Hide braken model
+                Renderer[] renderers = __instance.transform.Find("FlowermanModel").GetComponentsInChildren<Renderer>();
+                foreach (Renderer mesh in renderers)
                 {
-                    // Replace braken's nametag on scan
-                    __instance.GetComponentInChildren<ScanNodeProperties>().headerText = "Hatsune Miku";
+                    mesh.enabled = false;
                 }
+            }
 
-                // Replace SFX
-                if (ConfigManager.MikuAngry.Value)
-                {
-                    // Everyone can hear her terror
-                    __instance.creatureAngerVoice.maxDistance = 40;
-                }
+            if (ConfigManager.MikuScanTag.Value)
+            {
+                // Replace braken's nametag on scan
+                __instance.GetComponentInChildren<ScanNodeProperties>().headerText = "Hatsune Miku";
+            }
+
+            // Replace SFX
+            if (ConfigManager.MikuAngry.Value)
+            {
+                // Everyone can hear her terror
+                __instance.creatureAngerVoice.maxDistance = 40;
+            }
 
 
-                if (ConfigManager.MikuDies.Value)
-                {
-                    __instance.dieSFX = MikuBrakenBase.Miku_Dies; // Miku_Dies
-                }
+            if (ConfigManager.MikuDies.Value)
+            {
+                __instance.dieSFX = MikuBrakenBase.Miku_Dies; // Miku_Dies
+            }
 
-                if (ConfigManager.MikuStun.Value)
-                {
-                    __instance.enemyType.stunSFX = MikuBrakenBase.Miku_Stun; // Miku_Stun
-                }
+            if (ConfigManager.MikuStun.Value)
+            {
+                __instance.enemyType.stunSFX = MikuBrakenBase.Miku_Stun; // Miku_Stun
             }
 
         }
@@ -79,7 +85,7 @@ namespace MikuBraken.Patches
             {
                 if (!ConfigManager.MikuDeleteOnKilled.Value)
                 {
-                    Transform transform = __instance.transform;
+                    Transform transform = __instance.transform.Find("Miku(Clone)");
                     Quaternion rotation = transform.rotation;
                     float y = rotation.eulerAngles.y;
                     rotation = __instance.transform.rotation;

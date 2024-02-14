@@ -1,3 +1,11 @@
+# 1.2.0
+
+- Fixed an invisible one-way collision being rotated upwards when Miku dies (I haven't found a way to destroy it so you can make a bridge with Miku's body lol)
+- Added Glowing eyes (Size of glow might be adjusted in the future)
+- Added config option for showing glowing eyes
+
+- Removed contribute section in README.md as it is misleading
+
 # 1.1.0
 
 - Added 3 new sounds

@@ -21,6 +21,7 @@ namespace MikuBraken
         public static ConfigEntry<bool> MikuTerminal;
         public static ConfigEntry<bool> MikuDeleteOnKilled;
         public static ConfigEntry<bool> MikuScanTag;
+        public static ConfigEntry<bool> MikuGlowingEyes;
 
         // Sound
         public static ConfigEntry<bool> MikuAngry;
@@ -37,6 +38,13 @@ namespace MikuBraken
             "MikuModel",
             true,
             "The Braken's model will be replaced by Miku"
+            );
+
+            MikuGlowingEyes = cfg.Bind(
+            SectionGeneral,
+            "MikuGlowingEyes",
+            true,
+            "Miku will have glowing eyes similar to the Braken"
             );
 
             MikuTerminal = cfg.Bind(
@@ -109,7 +117,7 @@ namespace MikuBraken
     {
         private const string modGUID = "Wolfmyths.MikuBraken";
         private const string modName = "Miku Braken";
-        private const string modVersion = "1.1.0";
+        private const string modVersion = "1.2.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -135,6 +143,7 @@ namespace MikuBraken
 
         internal static List<GameObject> Prefabs;
         internal static GameObject Miku;
+        internal static GameObject Miku_Eyes;
 
         internal static AssetBundle SFXBundle;
         internal static AssetBundle PrefabBundle;
@@ -177,10 +186,14 @@ namespace MikuBraken
                 Miku_Footsteps3 = SoundFX[10];
                 Miku_Stun       = SoundFX[11];
 
-                //Log_AudioClips();
+                // Log_UnityObject_List(SoundFX);
 
                 Prefabs = PrefabBundle.LoadAllAssets<GameObject>().ToList();
-                Miku = Prefabs[0];
+                Miku_Eyes = Prefabs[0];
+                Miku      = Prefabs[1];
+
+                // Log_UnityObject_List(Prefabs);
+
             }
             else
             {
@@ -230,10 +243,17 @@ namespace MikuBraken
 
         }
 
-
-        public static void Log_AudioClips()
+        public static void Log_UnityObject_List(List<AudioClip> list)
         {
-            foreach (AudioClip a in SoundFX)
+            foreach (AudioClip a in list)
+            {
+                Log_Info(a.name);
+            }
+        }
+
+        public static void Log_UnityObject_List(List<GameObject> list)
+        {
+            foreach (GameObject a in list)
             {
                 Log_Info(a.name);
             }
