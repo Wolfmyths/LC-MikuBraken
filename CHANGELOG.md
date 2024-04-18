@@ -1,3 +1,8 @@
+# 1.2.1
+
+- Made code that overrides the Bracken's terminal entry and keyword more future proof
+- Fixed terminal company building moon keyword being replaced with "hatsune miku" *Bug introduced by game update V50*
+
 # 1.2.0
 
 - Fixed an invisible one-way collision being rotated upwards when Miku dies (I haven't found a way to destroy it so you can make a bridge with Miku's body lol)
