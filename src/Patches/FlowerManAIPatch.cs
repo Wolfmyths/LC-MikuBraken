@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
+using System.CodeDom;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MikuBraken.Patches
 {
@@ -8,50 +10,55 @@ namespace MikuBraken.Patches
     internal class FlowerManAIPatch
     {
 
+        const int ENRAGE_BEHAVIOR_INDEX = 2;
+
         [HarmonyPatch(typeof(FlowermanAI), "Start")]
         [HarmonyPostfix]
         static void OverrideStart(FlowermanAI __instance)
         {
+            const string SCAN_NODE_NAME = "ScanNode";
+            const string SCAN_NODE_TEXT = "Hatsune Miku";
+            const string FLOWERMAN_MODEL_NAME = "FlowermanModel";
+
             if (ConfigManager.MikuModel.Value)
             {
 
                 // Clone miku prefab
-                GameObject MikuClone = Object.Instantiate(MikuBrakenBase.Miku, __instance.gameObject.transform);
+                GameObject MikuClone = Object.Instantiate(MikuBrakenBase.Miku, __instance.transform);
                 MikuClone.name = "Miku(Clone)";
-                MikuClone.transform.localPosition = Vector3.zero; // Possible fix for weird collision on stairwells?
                 MikuClone.SetActive(true);
 
                 if (ConfigManager.MikuGlowingEyes.Value)
                 {
                     // Clone glowing eyes prefab
-                    GameObject MikuEyes = Object.Instantiate(MikuBrakenBase.Miku_Eyes, MikuClone.gameObject.transform);
+                    GameObject MikuEyes = Object.Instantiate(MikuBrakenBase.Miku_Eyes, MikuClone.transform);
                     MikuEyes.name = "MikuEyes(Clone)";
-
-                    MikuEyes.SetActive(true);
                     MikuEyes.transform.localPosition = new Vector3(-0.0817f, 2.5481f, 0.1302f);
+                    MikuEyes.SetActive(true);
+
                 }
 
+                Renderer[] renderers = __instance.transform.Find(FLOWERMAN_MODEL_NAME).GetComponentsInChildren<Renderer>();
                 // Hide braken model
-                Renderer[] renderers = __instance.transform.Find("FlowermanModel").GetComponentsInChildren<Renderer>();
-                foreach (Renderer mesh in renderers)
+                foreach (Renderer renderer in renderers)
                 {
-                    mesh.enabled = false;
+                    renderer.enabled = false;
                 }
             }
 
             if (ConfigManager.MikuScanTag.Value)
             {
                 // Replace braken's nametag on scan
-                __instance.GetComponentInChildren<ScanNodeProperties>().headerText = "Hatsune Miku";
+                __instance.transform.Find(SCAN_NODE_NAME).GetComponent<ScanNodeProperties>().headerText = SCAN_NODE_TEXT;
             }
 
             // Replace SFX
             if (ConfigManager.MikuAngry.Value)
             {
                 // Everyone can hear her terror
-                __instance.creatureAngerVoice.maxDistance = 40;
+                __instance.creatureAngerVoice.maxDistance = 35f;
+                
             }
-
 
             if (ConfigManager.MikuDies.Value)
             {
@@ -63,6 +70,26 @@ namespace MikuBraken.Patches
                 __instance.enemyType.stunSFX = MikuBrakenBase.Miku_Stun; // Miku_Stun
             }
 
+            // For debugging
+            //MikuBrakenBase.Log_Info("Printing Bracken Children in Scenetree:");
+            //foreach (Transform transform in __instance.transform)
+            //{
+            //    MikuBrakenBase.Log_Info($"Name: {transform.name}, Type: {transform.gameObject.GetType()}");
+            //    foreach (Component comp in transform.GetComponents<AudioSource>())
+            //    {
+            //        MikuBrakenBase.Log_Info($"\tName: {comp.name}, Type: {comp.GetType()}");
+            //    }
+            //}
+
+        }
+
+        // Function call is used as an event to make Miku's Angry sound more random
+        [HarmonyPatch(typeof(EnemyAI), "PlayAudioOfCurrentState")]
+        [HarmonyPrefix]
+        static void PreOverridePlayAudioOfCurrentState(FlowermanAI __instance)
+        {
+            if (!ConfigManager.MikuAngry.Value || __instance.currentBehaviourStateIndex != ENRAGE_BEHAVIOR_INDEX) { return; }
+            __instance.creatureAngerVoice.clip = MikuBrakenBase.Roll_Next_Angry_Clip();
         }
 
         [HarmonyPatch(typeof(FlowermanAI), "killAnimation")]
@@ -86,16 +113,15 @@ namespace MikuBraken.Patches
                 if (!ConfigManager.MikuDeleteOnKilled.Value)
                 {
                     Transform transform = __instance.transform.Find("Miku(Clone)");
-                    Quaternion rotation = transform.rotation;
-                    float y = rotation.eulerAngles.y;
-                    rotation = __instance.transform.rotation;
-                    transform.rotation = Quaternion.Euler(-90f, y, rotation.eulerAngles.z);
+
+                    transform.Rotate(-90f, 0f, 0f);
                 }
                 else
                 {
                     __instance.transform.Find("Miku(Clone)").gameObject.SetActive(false);
                 }
             }
+
         }
     }
 }

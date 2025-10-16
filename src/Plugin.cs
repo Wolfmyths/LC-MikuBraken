@@ -5,6 +5,7 @@ using HarmonyLib;
 using LCSoundTool;
 using MikuBraken.Patches;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -117,7 +118,7 @@ namespace MikuBraken
     {
         private const string modGUID = "Wolfmyths.MikuBraken";
         private const string modName = "Miku Braken";
-        private const string modVersion = "1.2.1";
+        private const string modVersion = "1.2.2";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -127,7 +128,6 @@ namespace MikuBraken
 
         internal static ManualLogSource mls;
 
-        private static List<AudioClip> SoundFX;
         internal static AudioClip Miku_Angry;
         internal static AudioClip Miku_Angry1;
         internal static AudioClip Miku_Caught;
@@ -135,17 +135,16 @@ namespace MikuBraken
         internal static AudioClip Miku_Caught2;
         internal static AudioClip Miku_CrackNeck;
         internal static AudioClip Miku_Dies;
-        internal static AudioClip Miku_Footsteps;
-        internal static AudioClip Miku_Footsteps1;
-        internal static AudioClip Miku_Footsteps2;
-        internal static AudioClip Miku_Footsteps3;
+        internal static AudioClip Miku_Footstep;
+        internal static AudioClip Miku_Footstep1;
+        internal static AudioClip Miku_Footstep2;
+        internal static AudioClip Miku_Footstep3;
         internal static AudioClip Miku_Stun;
 
         internal static List<GameObject> Prefabs;
         internal static GameObject Miku;
         internal static GameObject Miku_Eyes;
 
-        internal static AssetBundle SFXBundle;
         internal static AssetBundle PrefabBundle;
 
         void Awake()
@@ -163,48 +162,23 @@ namespace MikuBraken
 
             mls = Logger;
 
-            SoundFX = new List<AudioClip>();
+            string FolderLocation = Mod_Folder();
 
-            string FolderLocation = Instance.Info.Location;
-            FolderLocation = FolderLocation.TrimEnd("MikuBraken.dll".ToCharArray());
-            SFXBundle = AssetBundle.LoadFromFile(FolderLocation + "sounds");
             PrefabBundle = AssetBundle.LoadFromFile(FolderLocation + "model");
-            if (SFXBundle != null && PrefabBundle != null)
+            if (PrefabBundle != null)
             {
-                Log_Info("Asset bundles loaded");
-                SoundFX = SFXBundle.LoadAllAssets<AudioClip>().ToList();
-                Miku_Angry      = SoundFX[0];
-                Miku_Angry1     = SoundFX[1];
-                Miku_Caught     = SoundFX[2];
-                Miku_Caught1    = SoundFX[3];
-                Miku_Caught2    = SoundFX[4];
-                Miku_CrackNeck  = SoundFX[5];
-                Miku_Dies       = SoundFX[6];
-                Miku_Footsteps  = SoundFX[7];
-                Miku_Footsteps1 = SoundFX[8];
-                Miku_Footsteps2 = SoundFX[9];
-                Miku_Footsteps3 = SoundFX[10];
-                Miku_Stun       = SoundFX[11];
-
-                // Log_UnityObject_List(SoundFX);
+                Log_Info("Prefab Mesh Asset bundles loaded");
 
                 Prefabs = PrefabBundle.LoadAllAssets<GameObject>().ToList();
                 Miku_Eyes = Prefabs[0];
                 Miku      = Prefabs[1];
 
-                // Log_UnityObject_List(Prefabs);
+                // Log_Info(Prefabs);
 
             }
             else
             {
-                if (SFXBundle == null)
-                {
-                    Log_Error("Failed to load SoundFX bundle");
-                }
-                if (PrefabBundle == null)
-                {
-                    Log_Error("Failed to load Prefab bundle");
-                }
+                Log_Error("Failed to load Prefab bundle, Miku's model will not work :(");
             }
 
             harmony.PatchAll(typeof(MikuBrakenBase));
@@ -214,55 +188,67 @@ namespace MikuBraken
 
         void Start()
         {
+            const string FLOWERMAN_NAME = "Flowerman(Clone)";
+            const string SFX_FOLDER = "sfx";
+
+            string mod_folder = Mod_Folder();
+
+            // Assign sounds from file
+            Miku_Angry     = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Angry.wav", SoundTool.AudioType.wav);
+            Miku_Angry1    = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Angry1.wav", SoundTool.AudioType.wav);
+            Miku_Caught    = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Caught.wav", SoundTool.AudioType.wav);
+            Miku_Caught1   = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Caught1.wav", SoundTool.AudioType.wav);
+            Miku_Caught2   = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Caught2.wav", SoundTool.AudioType.wav);
+            Miku_CrackNeck = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_CrackNeck.wav", SoundTool.AudioType.wav);
+            Miku_Dies      = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Dies.wav", SoundTool.AudioType.wav);
+            Miku_Footstep  = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Footstep.wav", SoundTool.AudioType.wav);
+            Miku_Footstep1 = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Footstep1.wav", SoundTool.AudioType.wav);
+            Miku_Footstep2 = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Footstep2.wav", SoundTool.AudioType.wav);
+            Miku_Footstep3 = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Footstep3.wav", SoundTool.AudioType.wav);
+            Miku_Stun      = SoundTool.GetAudioClip(mod_folder, SFX_FOLDER, "Miku_Stun.wav", SoundTool.AudioType.wav);
+
             if (ConfigManager.MikuFootsteps.Value)
             {
                 // Replace Braken Footsteps
-                // Miku_Footstep 1-4
-                SoundTool.ReplaceAudioClip("Step1", Miku_Footsteps, 1f, "Flowerman(Clone)");
-                SoundTool.ReplaceAudioClip("Step2", Miku_Footsteps1, 1f, "Flowerman(Clone)");
-                SoundTool.ReplaceAudioClip("Step3", Miku_Footsteps2, 1f, "Flowerman(Clone)");
-                SoundTool.ReplaceAudioClip("Step4", Miku_Footsteps3, 1f, "Flowerman(Clone)");
+                // Miku_Footstep 0-3
+                SoundTool.ReplaceAudioClip("Step1", Miku_Footstep, 0.25f, FLOWERMAN_NAME);
+                SoundTool.ReplaceAudioClip("Step2", Miku_Footstep1, 0.25f, FLOWERMAN_NAME);
+                SoundTool.ReplaceAudioClip("Step3", Miku_Footstep2, 0.25f, FLOWERMAN_NAME);
+                SoundTool.ReplaceAudioClip("Step4", Miku_Footstep3, 0.25f, FLOWERMAN_NAME);
             }
 
             if (ConfigManager.MikuCaught.Value)
             {
                 // Replace Miku getting caught
                 // Miku_Caught 0-2
-                SoundTool.ReplaceAudioClip("Found1", Miku_Caught, 0.35f, "Flowerman(Clone)");
-                SoundTool.ReplaceAudioClip("Found1", Miku_Caught1, 0.35f, "Flowerman(Clone)");
-                SoundTool.ReplaceAudioClip("Found1", Miku_Caught2, 0.30f, "Flowerman(Clone)");
-            }
-
-            if (ConfigManager.MikuAngry.Value)
-            {
-                // Replace Miku getting angry
-                // Miku_Caught 0-1
-                SoundTool.ReplaceAudioClip("Angered", Miku_Angry, 0.5f);
-                SoundTool.ReplaceAudioClip("Angered", Miku_Angry1, 0.5f);
+                SoundTool.ReplaceAudioClip("Found1", Miku_Caught, 0.35f, FLOWERMAN_NAME);
+                SoundTool.ReplaceAudioClip("Found1", Miku_Caught1, 0.35f, FLOWERMAN_NAME);
+                SoundTool.ReplaceAudioClip("Found1", Miku_Caught2, 0.30f, FLOWERMAN_NAME);
             }
 
         }
 
-        public static void Log_UnityObject_List(List<AudioClip> list)
+        public static void Log_Info(object msg) { mls.LogInfo(msg); }
+
+        public static void Log_Warning(object msg) { mls.LogWarning(msg); }
+
+        public static void Log_Error(object msg) { mls.LogError(msg); }
+
+        public static string Mod_Folder() { return Instance.Info.Location.TrimEnd("MikuBraken.dll".ToCharArray()); }
+
+        // LCSoundTool does not allow for ObjectID-specific replacements, see FlowerManAIPatch.cs for implimentation
+        public static AudioClip Roll_Next_Angry_Clip()
         {
-            foreach (AudioClip a in list)
+            float rand_chance = UnityEngine.Random.Range(0f, 1f);
+
+            if (rand_chance >= 0.5f)
             {
-                Log_Info(a.name);
+                return Miku_Angry;
+            }
+            else
+            {
+                return Miku_Angry1;
             }
         }
-
-        public static void Log_UnityObject_List(List<GameObject> list)
-        {
-            foreach (GameObject a in list)
-            {
-                Log_Info(a.name);
-            }
-        }
-
-        public static void Log_Info(string msg) { mls.LogInfo(msg); }
-
-        public static void Log_Warning(string msg) { mls.LogWarning(msg); }
-
-        public static void Log_Error(string msg) { mls.LogError(msg); }
     }
 }

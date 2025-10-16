@@ -1,4 +1,7 @@
 # This .gitignore file should be placed at the root of your Unity project directory
+
+MikuBraken*.rar
+
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
@@ -50,8 +53,9 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-*/src/packages/*
-*/UpgradeLog*.htm
+/src/packages/*
+/UpgradeLog*.htm
+/src/app.config
 
 # Unity3D generated meta files
 *.pidb.meta

@@ -1,0 +1,10 @@
+{
+    "name": "MikuBraken",
+    "version_number": "1.2.2",
+    "website_url": "https://github.com/Wolfmyths/LC-MikuBraken",
+    "description": "Replaces the Braken model and sounds with Hatsune Miku",
+    "dependencies": [
+        "no00ob-LCSoundTool-1.5.1",
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}
